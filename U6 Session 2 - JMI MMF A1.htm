@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 6 Session 2: Time & Routine (AI Enhanced)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Outfit:wght@300;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- LIBRARIES -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --accent: #f43f5e;
+            --success: #10b981;
+            --bg-gradient: linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 100%);
+            --glass: rgba(255, 255, 255, 0.95);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #1e293b;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #1e293b;
+        }
+
+        #viewport {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        #presentation-container {
+            aspect-ratio: 16/9;
+            width: 90vw;
+            max-height: 90vh;
+            max-width: calc(90vh * 1.777);
+            position: relative;
+            perspective: 1000px;
+            background: transparent;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--glass);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.5s ease-in-out;
+            pointer-events: none;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .slide::after {
+            content: "JMI MMF A1";
+            position: absolute;
+            bottom: 25px;
+            left: 35px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--primary);
+            opacity: 0.3;
+            letter-spacing: 2px;
+            pointer-events: none;
+            z-index: 5;
+            text-transform: uppercase;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+            z-index: 10;
+        }
+
+        .slide.prev {
+            transform: translateX(-100px);
+            opacity: 0;
+        }
+
+        h1,
+        h2 {
+            font-family: 'Comfortaa', cursive;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #475569;
+        }
+
+        p,
+        li {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            color: #334155;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: -60px;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-nav {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-nav:hover {
+            background: white;
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .btn-capture {
+            background: var(--accent);
+            border: none;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 6px;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.5s;
+            z-index: 100;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            height: 100%;
+            align-items: center;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: transform 0.3s;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-3px);
+            background: white;
+        }
+
+        .flip-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 160px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .flip-card-front {
+            background: white;
+            color: black;
+            border: 2px solid var(--primary);
+        }
+
+        .flip-card-back {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .option-btn.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #15803d;
+        }
+
+        .option-btn.wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+            animation: shake 0.5s;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-top: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #cbd5e1;
+            z-index: 0;
+        }
+
+        .time-point {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border: 4px solid var(--accent);
+            border-radius: 50%;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+
+        .time-point strong {
+            color: var(--accent);
+            font-size: 1rem;
+        }
+
+        .img-fluid {
+            max-width: 100%;
+            max-height: 60vh;
+            width: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+        }
+
+        .play-prompt-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #e0f2fe;
+            color: var(--primary);
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: bold;
+            border: 2px solid var(--primary);
+            cursor: pointer;
+            margin: 10px 0;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
+        }
+
+        .play-prompt-btn:hover {
+            transform: scale(1.05);
+            background: white;
+        }
+
+        .play-prompt-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-prompt-btn.playing {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #15803d;
+            pointer-events: none;
+        }
+
+        .audio-stage {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .avatar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .avatar i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .avatar.active {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .avatar.active i {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .avatar-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        /* --- CHAT UI STYLES --- */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 450px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .chat-message.ai {
+            align-self: flex-start;
+            background: white;
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-message.user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 2px 5px rgba(79, 70, 229, 0.3);
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 25px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+
+        .chat-send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .typing-indicator {
+            font-style: italic;
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-left: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .typing-indicator.visible {
+            opacity: 1;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-primary {
+            color: var(--primary);
+        }
+
+        .text-accent {
+            color: var(--accent);
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(5px);
+            }
+
+            50% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="viewport">
+        <div id="presentation-container">
+            <div class="progress-bar" id="progress"></div>
+
+            <!-- SLIDE 1: Title -->
+            <div class="slide active text-center">
+                <div style="background: rgba(255,255,255,0.8); padding: 50px; border-radius: 40px; display: inline-block;">
+                    <i class="fa-regular fa-clock fa-bounce text-primary" style="font-size: 70px; margin-bottom: 20px;"></i>
+                    <h1>UNITÉ 6 - Session 2</h1>
+                    <h2>"Il est quelle heure ?" & Ma Journée</h2>
+                    <p style="margin-top: 20px; font-size: 1.2rem;">Appuyez sur la flèche de droite pour commencer ➔</p>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: Intro -->
+            <div class="slide">
+                <div class="split-layout">
+                    <div>
+                        <h2>Introduction</h2>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-comments text-accent"></i> Discussion</h3>
+                            <p>"En France, le temps est très important. Les horaires de train sont précis, et arriver en retard à un rendez-vous professionnel est mal vu."</p>
+                        </div>
+                    </div>
+                    <div class="glass-card" style="background: #fff7ed; border-left: 5px solid #f97316;">
+                        <h3 style="color: #c2410c;">Question du jour ❓</h3>
+                        <p style="font-size: 1.8rem; font-weight: bold;">Êtes-vous toujours à l'heure ou souvent en retard ?</p>
+                        <div class="text-center"><span style="background: #22c55e; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;">Répondez dans le chat !</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: Ice Breaker -->
+            <div class="slide text-center">
+                <h2>Ice Breaker: Le Juste Prix... de l'Heure ! 🧊</h2>
+                <div class="grid-4" style="margin-top: 30px;">
+                    <div class="glass-card"><i class="fa-solid fa-earth-europe text-primary" style="font-size: 2.5rem;"></i>
+                        <h3>Paris 🇫🇷</h3>
+                        <p>UTC +1</p>
+                    </div>
+                    <div class="glass-card"><i class="fa-solid fa-earth-americas text-accent" style="font-size: 2.5rem;"></i>
+                        <h3>New York 🇺🇸</h3>
+                        <p>UTC -5</p>
+                    </div>
+                    <div class="glass-card"><i class="fa-solid fa-earth-asia text-success" style="font-size: 2.5rem;"></i>
+                        <h3>Tokyo 🇯🇵</h3>
+                        <p>UTC +9</p>
+                    </div>
+                    <div class="glass-card"><i class="fa-solid fa-umbrella-beach" style="font-size: 2.5rem; color: orange;"></i>
+                        <h3>Jakarta 🇮🇩</h3>
+                        <p>UTC +7</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: Asking Time -->
+            <div class="slide">
+                <div class="split-layout">
+                    <div>
+                        <h2>La Question Magique ❓</h2>
+                        <ul style="list-style: none;">
+                            <li class="glass-card"><strong class="text-primary">1. Quelle heure est-il ?</strong> (Formal)</li>
+                            <li class="glass-card"><strong class="text-primary">2. Il est quelle heure ?</strong> (Informal)</li>
+                            <li class="glass-card"><strong class="text-primary">3. Vous avez l'heure ?</strong> (Street)</li>
+                        </ul>
+                    </div>
+                    <div class="text-center">
+                        <div class="glass-card" style="border: 2px solid #ef4444;">
+                            <h3 style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Attention !</h3>
+                            <p style="font-size: 1.8rem;">✅ Il est 8 heures.</p>
+                            <p style="font-size: 1.8rem; color: #999; text-decoration: line-through;">❌ C'est 8 heures.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: Exact Hours -->
+            <div class="slide">
+                <div class="split-layout">
+                    <div class="text-center">
+                        <img src="https://images.unsplash.com/photo-1495364141860-b0d03eccd065?auto=format&fit=crop&w=1000&q=80" class="img-fluid" alt="Clock">
+                    </div>
+                    <div>
+                        <h2>Les Heures "Piles"</h2>
+                        <div class="glass-card">
+                            <p><span class="text-primary font-bold">1h00</span> ➝ Il est <strong class="text-accent">une</strong> heure. <span style="font-size: 0.8rem;">(Feminine!)</span></p>
+                            <p><span class="text-primary font-bold">2h00</span> ➝ Il est deux heure<strong>s</strong>.</p>
+                            <p><span class="text-primary font-bold">12h00</span> ➝ Il est <strong>midi</strong>. ☀️</p>
+                            <p><span class="text-primary font-bold">00h00</span> ➝ Il est <strong>minuit</strong>. 🌙</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: Minutes -->
+            <div class="slide text-center">
+                <h2>Les Minutes : Vocabulaire Spécial</h2>
+                <div class="timeline">
+                    <div class="time-point"><span>8h05</span><strong>cinq</strong></div>
+                    <div class="time-point"><span>8h15</span><strong>et quart</strong></div>
+                    <div class="time-point"><span>8h30</span><strong>et demie</strong></div>
+                    <div class="time-point"><span>8h45</span><strong>moins le quart</strong></div>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: Official vs Informal -->
+            <div class="slide">
+                <h2>Officiel (24h) vs Courant (12h)</h2>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse: separate; border-spacing: 0 10px;">
+                        <tr style="background: var(--primary); color: white;">
+                            <th style="padding: 15px;">Heure</th>
+                            <th style="padding: 15px;">Officiel (Gare, TV)</th>
+                            <th style="padding: 15px;">Courant (Famille)</th>
+                        </tr>
+                        <tr style="background: white;">
+                            <td style="padding: 15px; font-weight: bold;">15h00</td>
+                            <td style="padding: 15px;">Il est quinze heures.</td>
+                            <td style="padding: 15px;">Il est trois heures <strong class="text-accent">de l'après-midi</strong>.</td>
+                        </tr>
+                        <tr style="background: white;">
+                            <td style="padding: 15px; font-weight: bold;">20h30</td>
+                            <td style="padding: 15px;">Il est vingt heures trente.</td>
+                            <td style="padding: 15px;">Il est huit heures et demie <strong class="text-accent">du soir</strong>.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SLIDE 8: Mini Exercise -->
+            <div class="slide text-center">
+                <h2>Mini-Exercice : Quelle heure est-il ?</h2>
+                <div class="flip-grid">
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3>09:00</h3>
+                            </div>
+                            <div class="flip-card-back">
+                                <p>Il est neuf heures.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3>12:00</h3>
+                            </div>
+                            <div class="flip-card-back">
+                                <p>Il est midi.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3>04:15</h3>
+                            </div>
+                            <div class="flip-card-back">
+                                <p>Il est quatre heures<br>et quart.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3>20:30</h3>
+                            </div>
+                            <div class="flip-card-back">
+                                <p>Il est huit heures<br>et demie.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3>10:45</h3>
+                            </div>
+                            <div class="flip-card-back">
+                                <p>Il est onze heures<br>moins le quart.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3>00:00</h3>
+                            </div>
+                            <div class="flip-card-back">
+                                <p>Il est minuit.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 9: Moments of the Day -->
+            <div class="slide">
+                <h2>Vocabulaire : Les moments de la journée</h2>
+                <div class="timeline">
+                    <div class="time-point" style="border-color: #fcd34d;"><i class="fa-regular fa-sun text-accent"></i><strong>Matin</strong></div>
+                    <div class="time-point" style="border-color: #fbbf24;"><i class="fa-solid fa-sun text-accent"></i><strong>Midi</strong></div>
+                    <div class="time-point" style="border-color: #f59e0b;"><i class="fa-solid fa-cloud-sun text-accent"></i><strong>Aprem</strong></div>
+                    <div class="time-point" style="border-color: #6366f1;"><i class="fa-solid fa-moon text-primary"></i><strong>Soir</strong></div>
+                    <div class="time-point" style="border-color: #1e293b;"><i class="fa-solid fa-bed text-primary"></i><strong>Nuit</strong></div>
+                </div>
+            </div>
+
+            <!-- SLIDE 10: AUDIO 1 - ROUTINE -->
+            <div class="slide">
+                <div class="split-layout">
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=1000&q=80" class="img-fluid" alt="Morning Routine">
+                    </div>
+                    <div class="glass-card text-center">
+                        <h3><i class="fa-solid fa-headphones"></i> Écoute Active - Partie 1</h3>
+                        <p><strong>Document B (La Routine)</strong></p>
+
+                        <div class="audio-stage" id="stage-routine">
+                            <div class="avatar" id="avatar-man">
+                                <i class="fa-solid fa-person"></i><span class="avatar-label">Homme</span>
+                            </div>
+                            <div class="avatar" id="avatar-woman">
+                                <i class="fa-solid fa-person-dress"></i><span class="avatar-label">Femme</span>
+                            </div>
+                        </div>
+
+                        <button class="play-prompt-btn" id="btn-routine" onclick="playRoutineDialogue()">
+                            <i class="fa-solid fa-circle-play"></i> ▶ JOUER LE DIALOGUE
+                        </button>
+                        <p style="margin-top: 10px; font-size: 1rem;">Écoutez et repérez le rendez-vous chez le dentiste.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 11: Audio 1 Q1 -->
+            <div class="slide text-center">
+                <h2>Question 1</h2>
+                <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+                    <h3>De quoi parle le document audio ?</h3>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">A) Une recette de cuisine</button>
+                    <button class="option-btn" onclick="checkAnswer(this, true)">B) L'organisation de la journée</button>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">C) Les vacances d'été</button>
+                </div>
+            </div>
+
+            <!-- SLIDE 12: Audio 1 Q2 -->
+            <div class="slide text-center">
+                <h2>Question 2</h2>
+                <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+                    <h3>À quelle heure est le rendez-vous chez le dentiste ?</h3>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">A) 14h00</button>
+                    <button class="option-btn" onclick="checkAnswer(this, true)">B) 15h30</button>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">C) 17h15</button>
+                </div>
+            </div>
+
+            <!-- SLIDE 13: Grammar -->
+            <div class="slide text-center">
+                <h2>La Routine : La préposition "À"</h2>
+                <div class="grid-4" style="margin-top: 30px;">
+                    <div class="glass-card"><i class="fa-solid fa-person-walking-arrow-right fa-2x text-primary"></i>
+                        <p>Je me lève <strong>à</strong> 7 heures.</p>
+                    </div>
+                    <div class="glass-card"><i class="fa-solid fa-utensils fa-2x text-accent"></i>
+                        <p>Nous déjeunons <strong>à</strong> midi.</p>
+                    </div>
+                    <div class="glass-card" style="grid-column: span 2;">
+                        <h3><i class="fa-solid fa-volume-high"></i> Prononciation (Liaison)</h3>
+                        <p>À une heure ➝ <span class="text-primary">[a-y-nœr]</span></p>
+                        <p>À deux heures ➝ <span class="text-primary">[a-deu-zœr]</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 14: Structure -->
+            <div class="slide text-center">
+                <h2>Structurer sa journée</h2>
+                <div style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
+                    <div class="glass-card" style="flex: 1;">
+                        <h1 class="text-primary">1</h1>
+                        <h3>D'abord</h3>
+                    </div>
+                    <div class="glass-card" style="flex: 1;">
+                        <h1 class="text-primary">2</h1>
+                        <h3>Ensuite</h3>
+                    </div>
+                    <div class="glass-card" style="flex: 1;">
+                        <h1 class="text-primary">3</h1>
+                        <h3>Enfin</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 15: Culture -->
+            <div class="slide">
+                <div class="split-layout">
+                    <div class="text-center">
+                        <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1000&q=80" class="img-fluid" alt="Dîner entre amis">
+                    </div>
+                    <div class="glass-card">
+                        <h2>Le quart d'heure de politesse 🇫🇷</h2>
+                        <p>En France, si vous êtes invité à dîner chez des amis à <strong class="text-primary">20h00</strong>...</p>
+                        <p class="text-center" style="font-size: 1.8rem; font-weight: bold; color: var(--accent);">Arrivez à 20h15 !</p>
+                        <p>Ne soyez pas exactement à l'heure. Laissez 15 minutes aux hôtes pour finir de se préparer !</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 16: AUDIO 2 - TRAIN -->
+            <div class="slide text-center">
+                <h2>Simulation DELF : Gare SNCF 🚄</h2>
+                <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+                    <div class="audio-stage" id="stage-train">
+                        <div class="avatar" id="avatar-train"><i class="fa-solid fa-bullhorn"></i><span class="avatar-label">Annonce</span></div>
+                    </div>
+                    <button class="play-prompt-btn" id="btn-train" onclick="playTrainAnnouncement()">
+                        <i class="fa-solid fa-circle-play"></i> ▶ JOUER L'ANNONCE
+                    </button>
+                    <p><strong>Écoutez et répondez aux 2 questions suivantes.</strong></p>
+                </div>
+            </div>
+
+            <!-- SLIDE 17: Audio 2 Q1 -->
+            <div class="slide text-center">
+                <h2>DELF Question 1</h2>
+                <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+                    <h3>Quelle est la destination du train ?</h3>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">A) Paris Montparnasse</button>
+                    <button class="option-btn" onclick="checkAnswer(this, true)">B) Lyon Part-Dieu</button>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">C) Marseille Saint-Charles</button>
+                </div>
+            </div>
+
+            <!-- SLIDE 18: Audio 2 Q2 -->
+            <div class="slide text-center">
+                <h2>DELF Question 2</h2>
+                <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+                    <h3>À quelle heure part le train ?</h3>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">A) 14h15</button>
+                    <button class="option-btn" onclick="checkAnswer(this, true)">B) 14h50</button>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">C) 15h40</button>
+                </div>
+            </div>
+
+            <!-- SLIDE 19: AUDIO 3 - CINEMA -->
+            <div class="slide">
+                <div class="split-layout">
+                    <div class="text-center">
+                        <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1000&q=80" class="img-fluid" alt="Cinema Popcorn">
+                    </div>
+                    <div class="glass-card text-center">
+                        <h3><i class="fa-solid fa-headphones"></i> Écoute Active - Partie 3</h3>
+                        <h2 class="text-accent">Sortie Cinéma 🍿</h2>
+                        <div class="audio-stage" id="stage-cinema">
+                            <div class="avatar" id="avatar-man-cinema"><i class="fa-solid fa-person"></i><span class="avatar-label">Paul</span></div>
+                            <div class="avatar" id="avatar-woman-cinema"><i class="fa-solid fa-person-dress"></i><span class="avatar-label">Sophie</span></div>
+                        </div>
+                        <button class="play-prompt-btn" id="btn-cinema" onclick="playCinemaDialogue()">
+                            <i class="fa-solid fa-circle-play"></i> ▶ JOUER LE DIALOGUE
+                        </button>
+                        <p style="margin-top: 10px;">Écoutez la conversation entre Sophie et Paul.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 20: Cinema Q1 -->
+            <div class="slide text-center">
+                <h2>Cinéma - Question 1</h2>
+                <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+                    <h3>Quel film vont-ils voir ?</h3>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">A) Titanic</button>
+                    <button class="option-btn" onclick="checkAnswer(this, true)">B) Le Grand Bleu</button>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">C) Star Wars</button>
+                </div>
+            </div>
+
+            <!-- SLIDE 21: Cinema Q2 -->
+            <div class="slide text-center">
+                <h2>Cinéma - Question 2</h2>
+                <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+                    <h3>À quelle heure commence le film ?</h3>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">A) 19h00</button>
+                    <button class="option-btn" onclick="checkAnswer(this, true)">B) 19h15</button>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">C) 20h30</button>
+                </div>
+            </div>
+
+            <!-- SLIDE 22: Cinema Q3 -->
+            <div class="slide text-center">
+                <h2>Cinéma - Question 3</h2>
+                <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+                    <h3>Où est le rendez-vous ?</h3>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">A) Au restaurant</button>
+                    <button class="option-btn" onclick="checkAnswer(this, true)">B) Devant le cinéma</button>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">C) À la gare</button>
+                </div>
+            </div>
+
+            <!-- SLIDE 23: ROLE PLAY CHAT (GEMINI INTEGRATION) -->
+            <div class="slide">
+                <div class="split-layout" style="grid-template-columns: 1fr 1.5fr;">
+                    <div style="background: var(--primary); color: white; padding: 30px; border-radius: 20px; display:flex; flex-direction:column; justify-content:center;">
+                        <h2>Jeu de Rôle ✨</h2>
+                        <h3>L'Agenda Impossible</h3>
+                        <p><strong>Votre Mission :</strong> Invitez "Thomas" à sortir samedi.</p>
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li><i class="fa-solid fa-user"></i> <strong>Vous :</strong> Proposez une heure (ex: "Tu es libre à 14h ?").</li>
+                            <li><i class="fa-solid fa-robot"></i> <strong>Thomas (IA) :</strong> Il va refuser avec une excuse !</li>
+                            <li>🎯 <strong>But :</strong> Insistez jusqu'à ce qu'il accepte !</li>
+                        </ul>
+                        <button class="play-prompt-btn" style="background:white; color:var(--primary); margin-top:20px;" onclick="initRoleplay()">
+                            <i class="fa-solid fa-arrows-rotate"></i> ✨ Recommencer
+                        </button>
+                    </div>
+
+                    <!-- CHAT INTERFACE -->
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message ai">Bonjour ! Je m'appelle Thomas. On fait quelque chose samedi ?</div>
+                        </div>
+                        <div class="typing-indicator" id="typing-indicator">Thomas écrit...</div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" id="user-input" placeholder="Écrivez votre message ici..." onkeypress="handleKeyPress(event)">
+                            <button class="chat-send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 24: Conclusion -->
+            <div class="slide text-center">
+                <div class="glass-card">
+                    <h1>Merci et À bientôt ! 👋</h1>
+                    <p>Prochaine session : <strong>Les loisirs et sortir</strong></p>
+                    <div style="margin-top: 30px;">
+                        <i class="fa-brands fa-youtube fa-2x text-accent" style="margin: 0 10px;"></i>
+                        <i class="fa-brands fa-instagram fa-2x text-primary" style="margin: 0 10px;"></i>
+                        <i class="fa-solid fa-envelope fa-2x text-success" style="margin: 0 10px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls" style="bottom: 20px; right: 20px;">
+            <button class="btn-nav" onclick="changeSlide(-1)" title="Précédent"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="btn-nav" onclick="changeSlide(1)" title="Suivant"><i class="fa-solid fa-chevron-right"></i></button>
+            <button class="btn-nav btn-capture" onclick="captureSlide()" title="Télécharger Slide (Image)"><i class="fa-solid fa-camera"></i></button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progress');
+        const synth = window.speechSynthesis;
+
+        // --- GEMINI API INTEGRATION ---
+        // PASTE YOUR API KEY INSIDE THE QUOTES BELOW:
+        const apiKey = "AIzaSyBIH_1kmolQy9hUDxKh-jcwwvwRTNYhzpw";
+        let chatHistory = [];
+
+        // Helper function for exponential backoff (Smart Retry)
+        async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    if (response.status === 429 || response.status >= 500) {
+                        throw new Error(`Retryable error: ${response.status}`);
+                    }
+                    throw new Error(`Non-retryable error: ${response.status}`);
+                }
+                return response;
+            } catch (error) {
+                if (retries > 0 && error.message.startsWith('Retryable')) {
+                    console.log(`Retrying... (${retries} left) after ${delay}ms`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithRetry(url, options, retries - 1, delay * 2);
+                } else if (retries > 0 && error.name === 'TypeError') {
+                    console.log(`Retrying network error... (${retries} left)`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithRetry(url, options, retries - 1, delay * 2);
+                } else {
+                    throw error;
+                }
+            }
+        }
+
+        // Fallback Logic (Mock Mode)
+        function getFallbackResponse(userText) {
+            const lower = userText.toLowerCase();
+
+            // Greetings
+            if (lower.match(/ça va|bonjour|salut|hello/)) {
+                return "Salut ! Ça va bien merci. Et toi, tu fais quoi samedi ?";
+            }
+
+            // Asking about time/availability
+            if (lower.match(/quand|heure|libre|dispo/)) {
+                return "Le matin je suis occupé, mais je suis libre le soir vers 18h.";
+            }
+
+            // Logic for proposals
+            const turnCount = chatHistory.filter(m => m.role === 'User').length;
+            if (turnCount <= 2) {
+                const excuses = [
+                    "Je ne peux pas, j'ai piscine.",
+                    "Non, désolé. Je dois faire mes devoirs.",
+                    "Samedi matin ? Impossible, je dors !"
+                ];
+                return excuses[Math.floor(Math.random() * excuses.length)] + " Tu es libre le soir ?";
+            } else {
+                return "D'accord, c'est parfait ! À samedi !";
+            }
+        }
+
+        async function callGemini(userText) {
+            document.getElementById('typing-indicator').classList.add('visible');
+
+            const systemPrompt = `Role: Thomas, a French student. User: Beginner (A1).
+        Goal: Schedule a meeting on Saturday.
+        Guidelines:
+        - Language: Simple French, present tense, short sentences.
+        - Greetings: If user asks "Ça va?", reply "Ça va bien ! Et toi ?"
+        - Availability: Busy morning (courses), afternoon (sport). Free after 17h.
+        - Refusals: If user suggests busy time, say "Non, désolé" + reason.
+        - Acceptance: If user suggests evening (17h+), say "Super ! C'est noté."
+        - Engagement: Ask "Et toi ?" or "Tu es libre ?" to keep chat moving.`;
+
+            let promptContext = systemPrompt + "\n\nConversation history:\n" + chatHistory.map(msg => `${msg.role}: ${msg.text}`).join("\n") + `\nUser: ${userText}\nThomas:`;
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: promptContext
+                    }]
+                }]
+            };
+
+            try {
+                // Only try to fetch if we have a key (or if in a specific env)
+                if (!apiKey) throw new Error("Missing API Key");
+
+                const response = await fetchWithRetry(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Désolé, je ne comprends pas.";
+
+                finishResponse(aiText);
+
+            } catch (error) {
+                console.warn("Switching to offline/fallback mode:", error);
+                const fallbackText = getFallbackResponse(userText);
+                finishResponse(fallbackText);
+            }
+        }
+
+        function finishResponse(text) {
+            document.getElementById('typing-indicator').classList.remove('visible');
+            addMessageToChat('ai', text);
+
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'fr-FR';
+            utter.rate = 0.9;
+            synth.speak(utter);
+        }
+
+        function addMessageToChat(role, text) {
+            const chatBox = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-message ${role}`;
+            msgDiv.textContent = text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            chatHistory.push({
+                role: role === 'user' ? 'User' : 'Thomas',
+                text: text
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessageToChat('user', text);
+            input.value = '';
+
+            callGemini(text);
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function initRoleplay() {
+            chatHistory = [];
+            const chatBox = document.getElementById('chat-messages');
+            chatBox.innerHTML = '<div class="chat-message ai">Bonjour ! Je m\'appelle Thomas. On fait quelque chose samedi ?</div>';
+        }
+
+        // --- DIALOGUE DATA (Static Audio) ---
+
+        const routineDialogue = [{
+                role: 'homme',
+                text: "Chérie, on fait quoi ce samedi ?"
+            },
+            {
+                role: 'femme',
+                text: "Alors... le matin, je fais les courses et je prépare le repas. Et toi ?"
+            },
+            {
+                role: 'homme',
+                text: "Moi, je vais au sport à 10 heures. Et l'après-midi ?"
+            },
+            {
+                role: 'femme',
+                text: "J'ai rendez-vous chez le dentiste à 15 heures 30."
+            },
+            {
+                role: 'homme',
+                text: "D'accord, on se retrouve le soir pour le dîner ?"
+            }
+        ];
+
+        const trainAnnouncement = [{
+                role: 'annonce',
+                text: "Votre attention s'il vous plaît."
+            },
+            {
+                role: 'annonce',
+                text: "Le train TGV inouïe numéro 68 42, à destination de Lyon Part-Dieu, va partir."
+            },
+            {
+                role: 'annonce',
+                text: "Départ 14 heures 50. Quai numéro 4."
+            },
+            {
+                role: 'annonce',
+                text: "Éloignez-vous de la bordure du quai s'il vous plaît."
+            }
+        ];
+
+        const cinemaDialogue = [{
+                role: 'femme',
+                text: "Salut Paul ! Tu veux aller au cinéma ce soir ?"
+            },
+            {
+                role: 'homme',
+                text: "Salut Sophie. Oui, bonne idée ! On va voir quel film ?"
+            },
+            {
+                role: 'femme',
+                text: "Le film 'Le Grand Bleu' passe à 19 heures 15."
+            },
+            {
+                role: 'homme',
+                text: "Parfait. On se retrouve devant le cinéma à 19 heures ?"
+            },
+            {
+                role: 'femme',
+                text: "D'accord, à tout à l'heure !"
+            }
+        ];
+
+        function resetAvatars() {
+            document.querySelectorAll('.avatar').forEach(a => a.classList.remove('active'));
+        }
+
+        function highlightAvatar(role) {
+            resetAvatars();
+            if (role === 'homme' && document.getElementById('avatar-man')) document.getElementById('avatar-man').classList.add('active');
+            if (role === 'femme' && document.getElementById('avatar-woman')) document.getElementById('avatar-woman').classList.add('active');
+            if (role === 'annonce' && document.getElementById('avatar-train')) document.getElementById('avatar-train').classList.add('active');
+            if (role === 'homme_cine' && document.getElementById('avatar-man-cinema')) document.getElementById('avatar-man-cinema').classList.add('active');
+            if (role === 'femme_cine' && document.getElementById('avatar-woman-cinema')) document.getElementById('avatar-woman-cinema').classList.add('active');
+        }
+
+        function playSequence(dialogueLines, btnId, context) {
+            if (synth.speaking) {
+                synth.cancel();
+                resetAvatars();
+                return;
+            }
+
+            const btn = document.getElementById(btnId);
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-volume-high fa-beat"></i> 🔊 Écoute...';
+            btn.classList.add('playing');
+
+            let index = 0;
+
+            function speakNext() {
+                if (index >= dialogueLines.length) {
+                    btn.classList.remove('playing');
+                    btn.innerHTML = originalText;
+                    resetAvatars();
+                    return;
+                }
+
+                const line = dialogueLines[index];
+                const utter = new SpeechSynthesisUtterance(line.text);
+                utter.lang = 'fr-FR';
+                utter.rate = 0.8;
+
+                if (line.role === 'homme') {
+                    utter.pitch = 0.7;
+                    highlightAvatar(context === 'cinema' ? 'homme_cine' : 'homme');
+                } else if (line.role === 'femme') {
+                    utter.pitch = 1.2;
+                    highlightAvatar(context === 'cinema' ? 'femme_cine' : 'femme');
+                } else {
+                    utter.pitch = 1.0;
+                    highlightAvatar('annonce');
+                }
+
+                utter.onend = function() {
+                    setTimeout(() => {
+                        index++;
+                        speakNext();
+                    }, 1000);
+                };
+                utter.onerror = function() {
+                    btn.classList.remove('playing');
+                    btn.innerHTML = "❌ Erreur";
+                    resetAvatars();
+                };
+                synth.speak(utter);
+            }
+            speakNext();
+        }
+
+        function playRoutineDialogue() {
+            playSequence(routineDialogue, 'btn-routine', 'routine');
+        }
+
+        function playTrainAnnouncement() {
+            playSequence(trainAnnouncement, 'btn-train', 'train');
+        }
+
+        function playCinemaDialogue() {
+            playSequence(cinemaDialogue, 'btn-cinema', 'cinema');
+        }
+
+        function updateProgress() {
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function changeSlide(n) {
+            if (synth.speaking) {
+                synth.cancel();
+                resetAvatars();
+                document.querySelectorAll('.play-prompt-btn').forEach(btn => {
+                    btn.classList.remove('playing');
+                    if (btn.innerHTML.includes('Écoute')) btn.innerHTML = '<i class="fa-solid fa-circle-play"></i> ▶ JOUER';
+                });
+            }
+            slides[currentSlide].classList.add('prev');
+            slides[currentSlide].classList.remove('active');
+            currentSlide += n;
+            if (currentSlide >= slides.length) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = slides.length - 1;
+            slides[currentSlide].classList.remove('prev');
+            slides[currentSlide].classList.add('active');
+            updateProgress();
+        }
+
+        function checkAnswer(btn, isCorrect) {
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.classList.remove('correct', 'wrong'));
+            if (isCorrect) {
+                btn.classList.add('correct');
+            } else {
+                btn.classList.add('wrong');
+            }
+        }
+
+        function captureSlide() {
+            const activeSlide = document.querySelector('.slide.active');
+            html2canvas(activeSlide, {
+                backgroundColor: null,
+                scale: 2
+            }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'Slide-' + (currentSlide + 1) + '.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+
+        updateProgress();
+    </script>
+
+</body>
+
+</html>
